@@ -1,0 +1,13 @@
+.conllectionWrapper li span{
+    color: rgb(55, 55, 55);
+}
+
+.conllectionWrapper li span:hover{
+    color: rgb(57, 114, 133);
+    cursor: pointer;
+}
+
+.conllectionWrapper li .choosen{
+    color: black;
+    font-weight: 600;
+}

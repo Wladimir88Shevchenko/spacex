@@ -1,0 +1,15 @@
+.usersData{
+    display: flex;
+    justify-content: space-between;
+    margin: 1.5rem 1rem;
+
+}
+
+.leftColumn{
+    max-width: 50%;
+}
+
+.rightColumn{
+    width: 40rem;
+    max-width: 50%;
+}
