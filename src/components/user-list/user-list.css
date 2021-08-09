@@ -11,3 +11,12 @@
     color: black;
     font-weight: 600;
 }
+
+.conllectionWrapper li .deleteBtn{
+    margin-right: 1rem;
+}
+
+.conllectionWrapper li .deleteBtn:hover{
+    color: tomato;
+    cursor: pointer;
+}

@@ -1,13 +1,11 @@
-import { gql } from "@apollo/client"
+import { gql } from "@apollo/client";
+import STANDARD_FIELDS from "./fragment-fields";
 
 const GETALLUSERS = gql `
+${STANDARD_FIELDS}
 query GetlAllUsers{
     users {
-      id
-      name
-      rocket
-      timestamp
-      twitter
+      ...StandardFields
     }
   }`
 

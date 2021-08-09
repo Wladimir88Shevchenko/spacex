@@ -7,11 +7,14 @@ import { useQuery } from "@apollo/client";
 import GETALLUSERS from "../../services/query";
 import UserContext from "../../services/userContext";
 import Footer from "../footer";
+import AddingUsers from "../adding-users";
 
 const App = () => {
     const { loading, error, data } = useQuery(GETALLUSERS);
 
     const [choosenPerson, setChoosenPerson] = useState(null);
+
+    const [newPerson, setNewPerson] = useState();
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error :(</p>;
@@ -31,6 +34,8 @@ const App = () => {
         choosenPerson,
         changePerson,
         setChoosenPerson,
+        newPerson,
+        setNewPerson,
     };
 
     return (
@@ -45,6 +50,7 @@ const App = () => {
                         <UserProps />
                     </div>
                 </div>
+                <AddingUsers />
                 <Footer />
             </UserContext.Provider>
         </div>
