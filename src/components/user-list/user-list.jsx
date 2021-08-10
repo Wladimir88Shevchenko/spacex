@@ -6,24 +6,19 @@ import UserContext from "../../services/userContext";
 import "./user-list.css";
 
 const UserList = () => {
-    const { data, changePerson, choosenPerson } = useContext(UserContext);
-    const [deleteUser , {loading, error}] = useMutation(DELETE_USERS,
-        {
-            refetchQueries: [
-                GETALLUSERS,
-              'GetlAllUsers'
-            ],
-          });
+    const { 
+        data, changePerson, 
+        choosenPerson, isAddPersonPanelVisible,
+        toogleShowAddPersonPanel } = useContext(UserContext);
+    const [deleteUser, { loading, error }] = useMutation(DELETE_USERS, {
+        refetchQueries: [GETALLUSERS, "GetlAllUsers"],
+    });
 
     let userList = [];
 
-    if(loading) return(
-        <h5>loading...</h5>
-    )
+    if (loading) return <h5>loading...</h5>;
 
-    if(error) return(
-        <h5>error :(</h5>
-    )
+    if (error) return <h5>error :(</h5>;
 
     data.users.forEach(({ id, name, rocket }) => {
         let spanStyle = "";
@@ -35,7 +30,7 @@ const UserList = () => {
             }
 
             userList.push(
-                <li className="collection-item" key={id}>
+                <li className="collection-item personLabel" key={id}>
                     <i
                         className="material-icons deleteBtn"
                         onClick={() =>
@@ -47,7 +42,6 @@ const UserList = () => {
                                         },
                                     },
                                 },
-                                
                             })
                         }
                     >
@@ -64,7 +58,16 @@ const UserList = () => {
         }
     });
 
-    return <ul className="collection conllectionWrapper">{userList}</ul>;
+    return (
+        <div>
+            <ul className="collection conllectionWrapper">{userList}</ul>
+            {!isAddPersonPanelVisible && 
+            <button 
+            onClick={toogleShowAddPersonPanel}
+            className="buttonStyle"
+            >Add new Person</button>}
+        </div>
+    );
 };
 
 export default UserList;

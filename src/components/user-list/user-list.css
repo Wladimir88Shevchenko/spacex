@@ -1,3 +1,7 @@
+.conllectionWrapper .personLabel{
+    display: flex;
+}
+
 .conllectionWrapper li span{
     color: rgb(55, 55, 55);
 }

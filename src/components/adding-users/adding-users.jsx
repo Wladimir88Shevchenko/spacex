@@ -8,21 +8,18 @@ import "./adding-users.css";
 import GETALLUSERS from "../../services/query";
 
 const AddingUsers = () => {
+    const {toogleShowAddPersonPanel} = useContext(UserContext)
 
+    const [addUser, { loading, error }] = useMutation(ADD_USERS, {
+        refetchQueries: [GETALLUSERS, "GetlAllUsers"],
+    });
 
-        const [addUser, { loading, error}] = useMutation(ADD_USERS, {
-        refetchQueries: [
-            GETALLUSERS,
-          'GetlAllUsers'
-        ],
-      });
-
-
-    /* const [addUser, { loading, error }] = useMutation(ADD_USERS,  {
+    /*     const [addUser, { loading, error }] = useMutation(ADD_USERS,  {
         update(cache, { data: { addUser } }) {
             cache.modify({
                 fields: {
                     users(existingPerson = []) {
+                        console.log(123);
                         const newPersonRef = cache.writeFragment({
                             data: addUser,
                             fragment: gql`
@@ -35,12 +32,13 @@ const AddingUsers = () => {
                                 }
                             `,
                         });
+                        
                         return [...existingPerson, newPersonRef];
                     },
                 },
             });
         },
-    } );*/
+    } ); */
 
     const { newPerson = {}, setNewPerson } = useContext(UserContext);
 
@@ -59,6 +57,12 @@ const AddingUsers = () => {
 
     return (
         <div>
+            <i
+                onClick={toogleShowAddPersonPanel}
+                className="closeBtn material-icons"
+            >
+                close
+            </i>
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -110,7 +114,9 @@ const AddingUsers = () => {
 
                     <br />
                     <br />
-                    <button type="submit">Add new Person</button>
+                    <button className="buttonStyle" type="submit">
+                        Add new Person
+                    </button>
                 </label>
             </form>
         </div>

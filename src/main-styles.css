@@ -1,0 +1,21 @@
+.mainContent{
+    min-height: calc(100vh - 64px - 70px - 22.5px);
+}
+
+.buttonStyle{
+    width: 10rem;
+    height: 3rem;
+    font-size: 1.2rem;
+    color: lightblue;
+    background-color: rgb(75, 75, 75);
+    border: 1px solid lightblue;
+    border-radius: 5px; 
+}
+
+.buttonStyle:hover{
+    color: rgb(208, 240, 251);
+    background-color: rgb(0, 0, 0);
+    border: 1px solid rgb(208, 240, 251);
+    cursor: pointer;
+    
+}

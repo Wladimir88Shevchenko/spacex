@@ -1,0 +1,11 @@
+.closeBtn{
+    color: black;
+    cursor: pointer;
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+}
+
+.closeBtn:hover{
+    color: tomato;
+}

@@ -97,7 +97,7 @@ const UserProps = () => {
                 <br />
                 <br />
 
-                <button type="submit">Add changes</button>
+                <button className="buttonStyle" type="submit">Add changes</button>
             </form>
         </div>
     );

@@ -13,3 +13,17 @@
     width: 40rem;
     max-width: 50%;
 }
+
+.addingForm{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50rem;
+    max-width: 90%;
+    z-index: 4;    
+    background-color: #fff;
+    padding: 2rem;
+    border: 2px solid rgb(104, 104, 104);
+    border-radius: 15px;
+}
