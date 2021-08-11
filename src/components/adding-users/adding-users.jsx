@@ -1,11 +1,12 @@
-import { /* gql , */ useMutation } from "@apollo/client";
-import React, { useContext } from "react";
+import { /* gql, */  useMutation } from "@apollo/client";
+import React, { useContext, useState } from "react";
 import ADD_USERS from "../../services/mutation-add-person";
 import UserContext from "../../services/userContext";
 import { v4 as uuidv4 } from "uuid";
 import "./adding-users.css";
 //import STANDARD_FIELDS from "../../services/fragment-fields";
 import GETALLUSERS from "../../services/query";
+import Loader from "../loader";
 
 const AddingUsers = () => {
     const {toogleShowAddPersonPanel} = useContext(UserContext)
@@ -14,7 +15,7 @@ const AddingUsers = () => {
         refetchQueries: [GETALLUSERS, "GetlAllUsers"],
     });
 
-    /*     const [addUser, { loading, error }] = useMutation(ADD_USERS,  {
+ /*        const [addUser, { loading, error }] = useMutation(ADD_USERS,  {
         update(cache, { data: { addUser } }) {
             cache.modify({
                 fields: {
@@ -40,7 +41,7 @@ const AddingUsers = () => {
         },
     } ); */
 
-    const { newPerson = {}, setNewPerson } = useContext(UserContext);
+    const [newPerson, setNewPerson] = useState({});
 
     const handleChange = (event) => {
         setNewPerson((oldvalue) => ({
@@ -53,7 +54,7 @@ const AddingUsers = () => {
 
     if (error) return <h2>we have error {error.message}</h2>;
 
-    if (loading) return <h2>loading...</h2>;
+    if (loading) return <Loader />;
 
     return (
         <div>
@@ -77,6 +78,7 @@ const AddingUsers = () => {
                         },
                     });
                     setNewPerson({});
+                    toogleShowAddPersonPanel();
                 }}
             >
                 <label>

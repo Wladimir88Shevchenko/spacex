@@ -9,63 +9,63 @@ import UserContext from "../../services/userContext";
 import Footer from "../footer";
 import AddingUsers from "../adding-users";
 import "../../main-styles.css";
+import Loader from "../loader";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 const App = () => {
     const { loading, error, data } = useQuery(GETALLUSERS);
 
-    const [choosenPerson, setChoosenPerson] = useState(null);
-    const [isAddPersonPanelVisible, setIsAddPersonPanelVisible] = useState(false);
+    const [isAddPersonPanelVisible, setIsAddPersonPanelVisible] =
+        useState(false);
 
-    const [newPerson, setNewPerson] = useState();
-
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <Loader />;
     if (error) return <p>Error :(</p>;
-
-    const changePerson = (id) => {
-        let choosenPerson;
-        data.users.forEach((prs) => {
-            if (prs.id === id) {
-                choosenPerson = prs;
-            }
-        });
-        setChoosenPerson(choosenPerson);
-    };
 
     const toogleShowAddPersonPanel = () => {
         setIsAddPersonPanelVisible((oldValue) => !oldValue);
-    }
+    };
 
     const contextValue = {
         data,
-        choosenPerson,
-        changePerson,
-        setChoosenPerson,
-        newPerson,
-        setNewPerson,
         isAddPersonPanelVisible,
         toogleShowAddPersonPanel,
     };
 
     return (
         <div>
-            <UserContext.Provider value={contextValue}>
-                <Header />
-                <div className="mainContent">
-                    <div className="usersData">
-                        <div className="leftColumn">
-                            <UserList />
+            <Router>
+                <UserContext.Provider value={contextValue}>
+                    <Header />
+                    <div className="mainContent">
+                        <div className="usersData">
+                            <Route exact path="/">
+                                <div className="leftColumn">
+                                    <UserList />
+                                </div>
+                            </Route>
+                            <Route
+                                path="/:id"
+                                render={({ match }) => {
+                                    const {id} = match.params;
+                                    return (
+                                        <div className="leftColimn">
+                                            <UserProps
+                                                choosenPerson={id}
+                                            />
+                                        </div>
+                                    );
+                                }}
+                            />
                         </div>
-                        <div className="rightColumn">
-                            <UserProps />
-                        </div>
+                        {isAddPersonPanelVisible && (
+                            <div className="addingForm">
+                                <AddingUsers />
+                            </div>
+                        )}
                     </div>
-                    {isAddPersonPanelVisible &&
-                    <div className="addingForm">
-                        <AddingUsers />
-                    </div>}
-                </div>
-                <Footer />
-            </UserContext.Provider>
+                    <Footer />
+                </UserContext.Provider>
+            </Router>
         </div>
     );
 };

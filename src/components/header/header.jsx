@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./header.css";
 
 const Header = () => {
@@ -6,9 +7,9 @@ const Header = () => {
         <div>
             <nav>
                 <div className="nav-wrapper navWrapper">
-                    <a href="!#" className="brand-logo brandLogo">
+                    <Link to="/" className="brand-logo brandLogo">
                         User List 🚀
-                    </a>
+                    </Link>
                     <ul id="nav-mobile" className="right hide-on-med-and-down">
                         <li>
                             <a href="https://api.spacex.land/graphql/">Api</a>
