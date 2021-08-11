@@ -1,39 +1,39 @@
 import { useMutation } from "@apollo/client";
 import React, { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
 import EDIT_USERS from "../../services/mutation-edit-person";
 import GETALLUSERS from "../../services/query";
 import UserContext from "../../services/userContext";
 import Loader from "../loader";
 import "./user-props.css";
 
-const UserProps = ({choosenPerson}) => {
-    const {data} = useContext(UserContext);
+const UserProps = ({ choosenPerson }) => {
+    const { data } = useContext(UserContext);
     const [edditUser, { loading, error }] = useMutation(EDIT_USERS, {
         refetchQueries: [GETALLUSERS, "GetlAllUsers"],
     });
 
-    const [ editedPerson, setEditedPerson ] = useState();
-    const [ loadingPerson, setLoadingPerson] = useState(true);
+    const [editedPerson, setEditedPerson] = useState();
+    const [loadingPerson, setLoadingPerson] = useState(true);
 
     let visibleData;
-
 
     useEffect(() => {
         setLoadingPerson(true);
         let personForWork;
-        data.users.forEach(user => {
-            if(user.id === choosenPerson){
+        data.users.forEach((user) => {
+            if (user.id === choosenPerson) {
                 personForWork = user;
             }
         });
         setEditedPerson(personForWork);
         setLoadingPerson(false);
-    }, [choosenPerson, data.users])
-    
+    }, [choosenPerson, data.users]);
+
     if (!editedPerson) {
         return <h4>Choose person from list for more information about him</h4>;
     }
-    
+
     const handleChange = (event) => {
         setEditedPerson((oldvalue) => ({
             ...oldvalue,
@@ -41,30 +41,27 @@ const UserProps = ({choosenPerson}) => {
         }));
     };
 
-    if(loading)return(
-        <Loader />
-    )
+    if (loading) return <Loader />;
 
-    if(error)return(
-        <h5>Error :(</h5>
-    )
+    if (error) return <h5>Error :(</h5>;
 
     const { name, rocket, timestamp, twitter, id } = editedPerson;
 
     if (loadingPerson) {
-        visibleData = <Loader />
+        visibleData = <Loader />;
     } else {
-        visibleData = (<form
+        visibleData = (
+            <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    
+
                     edditUser({
                         variables: {
                             updateUsersSet: {
-                               name,
-                               rocket,
-                               timestamp,
-                               twitter
+                                name,
+                                rocket,
+                                timestamp,
+                                twitter,
                             },
                             updateUsersWhere: {
                                 id: {
@@ -117,10 +114,15 @@ const UserProps = ({choosenPerson}) => {
                 <br />
                 <br />
 
-                <button className="buttonStyle" type="submit">Add changes</button>
-            </form>)
+                <button className="buttonStyle" type="submit">
+                    Add changes
+                </button>
+                <Link to="/">
+                    <button className="buttonStyle">Home Page</button>
+                </Link>
+            </form>
+        );
     }
-
 
     return (
         <div>
