@@ -1,46 +1,39 @@
-import { /* gql, */ useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import React, { useContext, useState } from "react";
 import ADD_USERS from "../../services/mutation-add-person";
 import UserContext from "../../services/userContext";
-import { v4 as uuidv4 } from "uuid";
+//import { v4 as uuidv4 } from "uuid";
 import "./adding-users.css";
-//import STANDARD_FIELDS from "../../services/fragment-fields";
 import GETALLUSERS from "../../services/query";
 import Loader from "../loader";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const AddingUsers = () => {
     const { toogleShowAddPersonPanel } = useContext(UserContext);
-    const [validText, setValidText] = useState("You have empty fields");
+    const [validText, setValidText] = useState();
+    const [startDate, setStartDate] = useState(new Date());
+
+    /* const [addUser, { loading, error }] = useMutation(ADD_USERS, {
+        refetchQueries: [GETALLUSERS, "GetlAllUsers"],
+    }); */
 
     const [addUser, { loading, error }] = useMutation(ADD_USERS, {
-        refetchQueries: [GETALLUSERS, "GetlAllUsers"],
-    });
+        update(cache, { data: { insert_users } }) {
+            const oldPersons = cache.readQuery({
+                query: GETALLUSERS,
+            });
 
-    /*        const [addUser, { loading, error }] = useMutation(ADD_USERS,  {
-        update(cache, { data: { addUser } }) {
-            cache.modify({
-                fields: {
-                    users(existingPerson = []) {
-                        console.log(123);
-                        const newPersonRef = cache.writeFragment({
-                            data: addUser,
-                            fragment: gql`
-                                fragment NewPerson on users {
-                                    id
-                                    name
-                                    rocket
-                                    timestamp
-                                    twitter
-                                }
-                            `,
-                        });
-                        
-                        return [...existingPerson, newPersonRef];
-                    },
+            let newPerson = insert_users.returning[0];
+
+            cache.writeQuery({
+                query: GETALLUSERS,
+                data: {
+                    users: [...oldPersons.users, newPerson],
                 },
             });
         },
-    } ); */
+    });
 
     const [newPerson, setNewPerson] = useState({});
 
@@ -49,21 +42,18 @@ const AddingUsers = () => {
             ...oldvalue,
             [event.target.name]: event.target.value,
         }));
-        //validationForm(newPerson);
     };
 
     const validationForm = (person) => {
-        const { name = "", rocket = "", timestamp = "", twitter = "" } = person;
-        
+        const { name = "", rocket = "", twitter = "" } = person;
+
         let errorText;
 
         if (name.length < 3) {
             errorText = "Name should be longer";
         } else if (!rocket.length) {
             errorText = "Choose name for the Rocket";
-        } else if (!timestamp.length) {
-            errorText = "Timestamp is empty";
-        }  else if(!twitter.length){
+        } else if (!twitter.length) {
             errorText = "Twitter is empty";
         } else {
             errorText = "";
@@ -71,14 +61,13 @@ const AddingUsers = () => {
 
         if (errorText) {
             setValidText(errorText);
-            return(false);
+            return false;
         } else {
-            return(true);
+            return true;
         }
     };
 
     const sbmt = (e) => {
-        debugger;
         e.preventDefault();
         const valid = validationForm(newPerson);
         if (valid) {
@@ -87,7 +76,6 @@ const AddingUsers = () => {
                     insertUsersObjects: [
                         {
                             ...newPerson,
-                            id: uuidv4(),
                         },
                     ],
                 },
@@ -97,7 +85,7 @@ const AddingUsers = () => {
         }
     };
 
-    const { name = "", rocket = "", timestamp = "", twitter = "" } = newPerson;
+    const { name = "", rocket = "", twitter = "" } = newPerson;
 
     if (error) return <h2>we have error {error.message}</h2>;
 
@@ -129,11 +117,17 @@ const AddingUsers = () => {
                     />
                     <span>Rocket</span>
 
-                    <input
-                        name="timestamp"
-                        placeholder="Type timestamp for new person"
-                        value={timestamp}
-                        onChange={handleChange}
+                    <DatePicker
+                        showTimeSelect
+                        dateFormat="Pp"
+                        selected={startDate}
+                        onChange={(date) => {
+                            setStartDate(date);
+                            setNewPerson((oldValue) => ({
+                                ...oldValue,
+                                timestamp: date,
+                            }));
+                        }}
                     />
                     <span>Timestamp</span>
 

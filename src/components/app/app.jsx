@@ -46,12 +46,10 @@ const App = () => {
                             <Route
                                 path="/:id"
                                 render={({ match }) => {
-                                    const {id} = match.params;
+                                    const { id } = match.params;
                                     return (
                                         <div className="leftColimn">
-                                            <UserProps
-                                                choosenPerson={id}
-                                            />
+                                            <UserProps choosenPerson={id} />
                                         </div>
                                     );
                                 }}

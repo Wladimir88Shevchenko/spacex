@@ -10,9 +10,34 @@ import "./user-list.css";
 const UserList = ({ history }) => {
     const { data, isAddPersonPanelVisible, toogleShowAddPersonPanel } =
         useContext(UserContext);
-    const [deleteUser, { loading, error }] = useMutation(DELETE_USERS, {
+    /*
+    //first vaiant how we can update our local state
+
+        const [deleteUser, { loading, error }] = useMutation(DELETE_USERS, {
         refetchQueries: [GETALLUSERS, "GetlAllUsers"],
-    });
+    }); */
+
+    
+    //second vaiant how we can update our local state
+    
+    const [deleteUser, { loading, error }] = useMutation(DELETE_USERS, 
+        {
+            update(cache, { data: { delete_users } }) {
+                const oldPersons = cache.readQuery({
+                    query: GETALLUSERS,
+                });
+    
+                const deletedPersonId = delete_users.returning[0].id;
+                const newPersonsList = oldPersons.users.filter(pers => pers.id !== deletedPersonId);
+    
+                cache.writeQuery({
+                    query: GETALLUSERS,
+                    data: {
+                        users: [...newPersonsList],
+                    },
+                });
+            },
+        });
 
     let userList = [];
 

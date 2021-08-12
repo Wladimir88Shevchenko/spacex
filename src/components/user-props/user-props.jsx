@@ -6,32 +6,69 @@ import GETALLUSERS from "../../services/query";
 import UserContext from "../../services/userContext";
 import Loader from "../loader";
 import "./user-props.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const UserProps = ({ choosenPerson }) => {
     const { data } = useContext(UserContext);
-    const [edditUser, { loading, error }] = useMutation(EDIT_USERS, {
+/*     const [edditUser, { loading, error }] = useMutation(EDIT_USERS, {
         refetchQueries: [GETALLUSERS, "GetlAllUsers"],
+    }); */
+
+    const [edditUser, { loading, error }] = useMutation(EDIT_USERS, {
+        update(cache, { data: { update_users } }) {
+            const oldPersons = cache.readQuery({
+                query: GETALLUSERS,
+            });
+
+            const updatedPersonId = update_users.returning[0];
+            let newPersonsList = oldPersons.users.filter(pers => 
+                pers.id !== updatedPersonId.id);
+            
+            newPersonsList = [...newPersonsList, updatedPersonId];
+
+            cache.writeQuery({
+                query: GETALLUSERS,
+                data: {
+                    users: [...newPersonsList],
+                },
+            });
+        },
     });
 
     const [editedPerson, setEditedPerson] = useState();
     const [loadingPerson, setLoadingPerson] = useState(true);
+    let personForWork;
+    
+    data.users.forEach((user) => {
+        if (user.id === choosenPerson) {
+            personForWork = user;
+        }
+    });
+
+    const dataForDate = (personForWork) ? personForWork.timestamp : "";
+
+    const [startDate, setStartDate] = useState(
+        new Date(dataForDate)
+    );
 
     let visibleData;
 
     useEffect(() => {
         setLoadingPerson(true);
-        let personForWork;
-        data.users.forEach((user) => {
-            if (user.id === choosenPerson) {
-                personForWork = user;
-            }
-        });
         setEditedPerson(personForWork);
         setLoadingPerson(false);
-    }, [choosenPerson, data.users]);
+    }, [choosenPerson, data.users, personForWork]);
 
     if (!editedPerson) {
-        return <h4>Choose person from list for more information about him</h4>;
+        return (
+            <>
+                <h4>This page has not been created yet. You can of course wait while we create it, but you'd better go to our main page.</h4>
+                <Link to="/">
+                    <button className="buttonStyle">Home Page</button>
+                </Link>
+            </>
+        );
     }
 
     const handleChange = (event) => {
@@ -45,7 +82,8 @@ const UserProps = ({ choosenPerson }) => {
 
     if (error) return <h5>Error :(</h5>;
 
-    const { name, rocket, timestamp, twitter, id } = editedPerson;
+    const { name, rocket, twitter, id } = editedPerson;
+    let { timestamp } = editedPerson;
 
     if (loadingPerson) {
         visibleData = <Loader />;
@@ -54,7 +92,6 @@ const UserProps = ({ choosenPerson }) => {
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-
                     edditUser({
                         variables: {
                             updateUsersSet: {
@@ -93,11 +130,17 @@ const UserProps = ({ choosenPerson }) => {
                 </label>
 
                 <label>
-                    <input
-                        name="timestamp"
-                        placeholder="Type timestamp for this person"
-                        value={timestamp ? timestamp : "-"}
-                        onChange={handleChange}
+                    <DatePicker
+                        showTimeSelect
+                        dateFormat="Pp"
+                        selected={startDate}
+                        onChange={(date) => {
+                            setStartDate(date);
+                            setEditedPerson((oldValue) => ({
+                                ...oldValue,
+                                timestamp: date,
+                            }));
+                        }}
                     />
                     <span>Timestamp</span>
                 </label>
