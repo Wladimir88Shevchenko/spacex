@@ -3,7 +3,6 @@ import React, { useContext } from "react";
 import ADD_USERS from "../../services/mutation-add-person";
 import UserContext from "../../services/userContext";
 import "./adding-users.css";
-import GETALLUSERS from "../../services/query";
 import Loader from "../loader";
 import "react-datepicker/dist/react-datepicker.css";
 import PersonsForm from "../persons-form/persons-form";
@@ -160,22 +159,7 @@ const AddingUsers = () => {
 
     const { toogleShowAddPersonPanel } = useContext(UserContext);
 
-    const [addUser, { loading, error }] = useMutation(ADD_USERS, {
-        update(cache, { data: { insert_users } }) {
-            const oldPersons = cache.readQuery({
-                query: GETALLUSERS,
-            });
-
-            let newPerson = insert_users.returning[0];
-
-            cache.writeQuery({
-                query: GETALLUSERS,
-                data: {
-                    users: [...oldPersons.users, newPerson],
-                },
-            });
-        },
-    });
+    const [addUser, { loading, error }] = useMutation(ADD_USERS);
 
     if (error) return <h2>we have error {error.message}</h2>;
 

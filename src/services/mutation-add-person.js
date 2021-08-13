@@ -6,7 +6,7 @@ ${STANDARD_FIELDS}
 mutation AddUser($insertUsersObjects: [users_insert_input!]!) {
     insert_users(objects: $insertUsersObjects) {
       returning {
-        ...StandardFields
+        ...StandardFields,
       }
     }
   }

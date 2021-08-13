@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Link } from "react-router-dom";
+import GETALLUSERS from "../../services/query";
 import UserContext from "../../services/userContext";
 import "./persons-form.css";
 
@@ -51,6 +52,7 @@ const PersonsForm = (props) => {
         const valid = validationForm(person);
         if (valid) {
             if (actionType === "Add") {
+
                 userAction({
                     variables: {
                         insertUsersObjects: [
@@ -58,6 +60,38 @@ const PersonsForm = (props) => {
                                 ...person,
                             },
                         ],
+                    },
+                    optimisticResponse: {
+                        insert_users: {
+                            __typename: "users_mutation_response",
+                            returning: [{
+                                __typename: "users",
+                                id: "-1",
+                                name,
+                                rocket,
+                                timestamp,
+                                twitter,
+                            }],
+                    },
+                    },
+
+                    update(cache, { data: { insert_users } }) {
+                        if (!insert_users) {
+                            return;
+                        }
+
+                        const oldPersons = cache.readQuery({
+                            query: GETALLUSERS,
+                        });
+
+                        let newPerson = insert_users.returning[0];
+
+                        cache.writeQuery({
+                            query: GETALLUSERS,
+                            data: {
+                                users: [...oldPersons.users, newPerson],
+                            },
+                        });
                     },
                 });
                 setPerson({});
