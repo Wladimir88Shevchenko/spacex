@@ -26,6 +26,7 @@ const UserList = ({ history }) => {
                 const oldPersons = cache.readQuery({
                     query: GETALLUSERS,
                 });
+
     
                 const deletedPersonId = delete_users.returning[0].id;
                 const newPersonsList = oldPersons.users.filter(pers => pers.id !== deletedPersonId);

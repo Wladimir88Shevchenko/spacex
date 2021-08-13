@@ -8,6 +8,7 @@ const STANDARD_FIELDS = gql`
         rocket
         timestamp
         twitter
+        
     }
 `;
 

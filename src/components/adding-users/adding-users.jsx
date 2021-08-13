@@ -1,22 +1,24 @@
 import { useMutation } from "@apollo/client";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import ADD_USERS from "../../services/mutation-add-person";
 import UserContext from "../../services/userContext";
-//import { v4 as uuidv4 } from "uuid";
 import "./adding-users.css";
 import GETALLUSERS from "../../services/query";
 import Loader from "../loader";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import PersonsForm from "../persons-form/persons-form";
 
+// OLD VARIANT
+
+/* 
 const AddingUsers = () => {
     const { toogleShowAddPersonPanel } = useContext(UserContext);
     const [validText, setValidText] = useState();
     const [startDate, setStartDate] = useState(new Date());
 
-    /* const [addUser, { loading, error }] = useMutation(ADD_USERS, {
-        refetchQueries: [GETALLUSERS, "GetlAllUsers"],
-    }); */
+    //const [addUser, { loading, error }] = useMutation(ADD_USERS, {
+    //    refetchQueries: [GETALLUSERS, "GetlAllUsers"],
+    //}); 
 
     const [addUser, { loading, error }] = useMutation(ADD_USERS, {
         update(cache, { data: { insert_users } }) {
@@ -147,6 +149,53 @@ const AddingUsers = () => {
                     </button>
                 </label>
             </form>
+        </div>
+    );
+};
+ */
+
+// NEW VARIANT
+
+const AddingUsers = () => {
+
+    const { toogleShowAddPersonPanel } = useContext(UserContext);
+
+    const [addUser, { loading, error }] = useMutation(ADD_USERS, {
+        update(cache, { data: { insert_users } }) {
+            const oldPersons = cache.readQuery({
+                query: GETALLUSERS,
+            });
+
+            let newPerson = insert_users.returning[0];
+
+            cache.writeQuery({
+                query: GETALLUSERS,
+                data: {
+                    users: [...oldPersons.users, newPerson],
+                },
+            });
+        },
+    });
+
+    if (error) return <h2>we have error {error.message}</h2>;
+
+    if (loading) return <Loader />;
+
+    return (
+        <div>
+            <i
+                onClick={toogleShowAddPersonPanel}
+                className="closeBtn material-icons"
+            >
+                close
+            </i>
+            
+            <PersonsForm 
+            initialDate={() => new Date()}
+            userAction={addUser}
+            actionType="Add"
+            />
+
         </div>
     );
 };
